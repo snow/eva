@@ -43,6 +43,19 @@ jQuery.noConflict();
 						data[param.find('key').text()] = param.find('value').text();
 					});
 
+					$.ajax({
+						type: type,
+						url: url,
+						data: data,
+						dataType: 'json',
+						success: function(data)
+						{
+							console.log(data);
+						}
+					});
+
+					return;
+
 					if( apiLi.find('method').text().toUpperCase() === 'POST' )
 					{
 						var _token = apiIndex + '-' + conditionIndex;
@@ -75,16 +88,7 @@ jQuery.noConflict();
 					}
 					else
 					{
-						$.ajax({
-							type: type,
-							url: url,
-							data: data,
-							dataType: 'json',
-							success: function(data)
-							{
-								console.log('meow');
-							}
-						});
+
 					}
 				});
 			});
