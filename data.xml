@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <root>
-	<apiBaseUri>eva.fe</apiBaseUri>
+	<apiBaseUri>http://192.168.1.46/icdServer/api</apiBaseUri>
 
 	<apiLs>
 		<apiLi>
 			<path>/account/signup</path>
+			<method>POST</method>
 
 			<testData>
 				<!-- new or duplicate -->
