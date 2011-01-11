@@ -144,12 +144,12 @@ jQuery.noConflict();
 				{
 					$condition.addClass('eva-error').
 						find('.eva-ing').removeClass('eva-ing').
-						end().find('.eva-status').text( xhr.status + ' : ' + xhr.statusText );
+						end().find('.eva-status').text( xhr.status + ' : ' + xhr.statusText + '/' + textStatus);
+
+					$condition.find('.eva-response').text( xhr.responseText);
 				}
 			});
 		},
-
-		handleConditionError: function(statusCode,errorMessage){},
 
 		expandCondition: function(condition)
 		{
