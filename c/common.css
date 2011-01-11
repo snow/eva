@@ -4,4 +4,21 @@
 /* layout */
 
 /* common */
-.eva-testDataCondition {display:none}
+.eva-entity {background:#eee}
+	.eva-entity h2 {padding:0 0.8em;margin:0;background:#333;color:#fff}
+
+.eva-method {margin-bottom:1em}
+	.eva-method h3 {padding:0.5em 1.6em;margin:0;background:#666;color:#fff}
+
+.eva-condition {margin:1em 0}
+	.eva-condition.eva-ing {background:url(/img/loading.gif) no-repeat left center}
+	.eva-collapsed .eva-params,
+	.eva-collapsed .eva-result {display:none}
+	.eva-expanded .eva-summary {display:none}
+
+	.eva-condition .col-l {float:left;width:300px}
+	.eva-condition .col-r {margin-left:300px}
+
+.eva-paramSerial {display:block}
+
+
