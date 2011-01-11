@@ -55,12 +55,13 @@ jQuery.noConflict();
 				eva.apiEntries[entityAndMethod[0]][entityAndMethod[1]] =apiObj;
 			});
 
-			eva.testDataLoaded = true;eva.run();
+			eva.testDataLoaded = true;
+			eva.buildMarkup();
 
 			//console.log(eva.apiEntries);
 		},
 
-		run: function()
+		buildMarkup: function()
 		{
 			if(!eva.testDataLoaded)
 			{
@@ -87,8 +88,10 @@ jQuery.noConflict();
 
 					$.each(method.conditions, function(i,condition)
 					{
-						var $condition = eva.tpl.condition.clone().appendTo($methodBody);
-						$condition.find('.eva-paramSerial').text(condition.toSource());
+						var $condition = eva.tpl.condition.clone();
+
+						$condition.find('.eva-paramSerial').text(condition.toSource()).
+							after('<span class="eva-collapse eva-col-r">collapse</span>');
 
 						var $params = $condition.find('.eva-params');
 
@@ -100,39 +103,49 @@ jQuery.noConflict();
 								end().appendTo($params);
 						});
 
-						var _ajaxCfg = $.extend({
-							data: condition,
-							beforeSend: function(xhr, settings)
-							{
-								$condition.removeClass('eva-success eva-error').addClass('eva-ing');
-							},
-							success: function(data, textStatus, xhr)
-							{
-								$condition.removeClass('eva-ing');
+						$methodBody.append($condition);
+						eva.collapseCondition($condition);
 
-								if( parseInt(data.errorCode) )
-								{
-									$condition.addClass('eva-error').
-										find('.eva-status').text( '500 : ' + data.sysMsg );
-								}
-								else
-								{
-									$condition.addClass('eva-success').
-										find('.eva-status').text( xhr.status + ' : ' + xhr.statusText );
-								}
-
-								$condition.find('.eva-response').text(xhr.responseText);
-							},
-							error: function(xhr, textStatus, errorThrown)
-							{
-								$condition.removeClass('eva-ing').addClass('eva-error').
-									find('.eva-status').text( xhr.status + ' : ' + xhr.statusText );
-							}
-						}, baseAjaxCfg);
-
-						$.ajax(_ajaxCfg);
+						eva.runCondition(method,condition,$condition);
 					});
 				});
+			});
+		},
+
+		runCondition: function(method,condition,$condition)
+		{
+			$.ajax({
+				url: eva.apiBaseUri + method.path,
+				type: method.type,
+				dataType: 'json',
+				data: condition,
+				beforeSend: function(xhr, settings)
+				{
+					$condition.find('.eva-status').addClass('eva-ing');
+				},
+				success: function(data, textStatus, xhr)
+				{
+					$condition.find('.eva-ing').removeClass('eva-ing');
+
+					if( parseInt(data.errorCode) )
+					{
+						$condition.addClass('eva-error').
+							find('.eva-status').text( '500 : ' + data.sysMsg );
+					}
+					else
+					{
+						$condition.addClass('eva-success').
+							find('.eva-status').text( xhr.status + ' : ' + xhr.statusText );
+					}
+
+					$condition.find('.eva-response').html( '<pre>'+ eva.printJSON($.parseJSON(xhr.responseText)) +'</pre>' );
+				},
+				error: function(xhr, textStatus, errorThrown)
+				{
+					$condition.addClass('eva-error').
+						find('.eva-ing').removeClass('eva-ing').
+						end().find('.eva-status').text( xhr.status + ' : ' + xhr.statusText );
+				}
 			});
 		},
 
@@ -140,12 +153,64 @@ jQuery.noConflict();
 
 		expandCondition: function(condition)
 		{
-			condition.removeClass('eva-collapsed').addClass('eva-expanded');
+			condition.removeClass('eva-collapsed').addClass('eva-expanded').
+				find('.eva-collapse').show().
+				end().find('.eva-expand').hide().
+				end().find('.eva-extra').slideDown('fast');
 		},
 
 		collapseCondition: function(condition)
 		{
-			condition.removeClass('eva-expanded').addClass('eva-collapsed');
+			condition.removeClass('eva-expanded').addClass('eva-collapsed').
+				find('.eva-collapse').hide().
+				end().find('.eva-expand').show().
+				end().find('.eva-extra').slideUp('fast');
+		},
+
+		printJSON: function (obj, depth)
+		{
+			var output = '';
+
+			if( 'undefined' === typeof depth ) { depth=0; }
+
+			if( 'object' === typeof obj )
+			{
+				output = "{\n";
+
+				$.each(obj, function(key, value)
+				{
+					if( 'object' === typeof value )
+					{
+						$.each(obj, function(key, value)
+						{
+							output += eva.printJSON(value, ++depth);
+						});
+					}
+					else
+					{
+						for(i=0;i<=depth;i++)
+						{
+							output += "  ";
+						}
+						output += ( key + ' : ' + value + ",\n" );
+					}
+				});
+
+				var lastComma = output.length-2
+
+				if( ',' === output[lastComma])
+				{
+					output = output.substr(0,lastComma) + "\n";
+				}
+
+				output += "}\n";
+			}
+			else
+			{
+				throw 'eva.printJSON need a object,'+typeof obj+' given';
+			}
+
+			return output;
 		},
 
 		z: 0
@@ -157,22 +222,25 @@ jQuery.noConflict();
 		eva.container.find('.eva-tpl').each(function(i,e)
 		{
 			var _tpl = $(this).removeClass('eva-tpl').removeClass('s-h').remove();
-			eva.tpl[_tpl.attr('class').substr(4)] = _tpl;
+			eva.tpl[_tpl.attr('tplName')] = _tpl;
 		});
 
-		/*eva.container.delegate('.eva-paramSerial','click',function(e)
+		eva.container.delegate('.eva-summary','click',function(e)
 		{
 			e.preventDefault();
 			var _condition = $(e.target).closest('.eva-condition');
-			if( _condition.hasClass('eva-collapsed') )
+			if( _condition.length )
 			{
-				eva.expandCondition(_condition);
+				if(_condition.hasClass('eva-collapsed'))
+				{
+					eva.expandCondition(_condition);
+				}
+				else
+				{
+					eva.collapseCondition(_condition);
+				}
 			}
-			else
-			{
-				eva.collapseCondition(_condition);
-			}
-		});*/
+		});
 
 		// init data
 		$.get('data.xml',eva.loadTestData,'xml');

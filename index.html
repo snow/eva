@@ -23,7 +23,7 @@
 		<div id="eva-main" class="container">
 		</div>
 
-		<div class="eva-entity eva-tpl s-h">
+		<div class="eva-entity eva-tpl s-h" tplName="entity">
 			<div class="hd">
 				<h2 class="eva-entityName"></h2>
 			</div>
@@ -31,7 +31,7 @@
 			</div>
 		</div>
 
-		<div class="eva-method eva-tpl s-h">
+		<div class="eva-method eva-tpl s-h" tplName="method">
 			<div class="hd">
 				<h3 class="eva-methodName"></h3>
 			</div>
@@ -39,23 +39,23 @@
 			</div>
 		</div>
 
-		<div class="eva-condition eva-tpl s-h">
-			<div class="col-l">
-				<div class="eva-status"></div>
-			</div>
-			<div class="col-r">
-				<div class="eva-summary s-h">
-					<a class="eva-paramSerial" href="javascript:void(0)"></a>
+		<div class="eva-condition eva-tpl s-h" tplName="condition">
+			<a class="eva-summary" href="javascript:void(0)">
+				<span class="eva-status eva-col-l"></span>
+				<span class="eva-expand eva-paramSerial eva-col-r"></span>
+			</a>
+			<div class="eva-extra">
+				<div class="eva-response eva-col-l"></div>
+				<div class="eva-wrapper eva-col-r clearfix">
+					<table class="eva-params">
+						<tbody>
+							<tr class="eva-param eva-tpl s-h" tplName="param">
+								<td class="eva-key"></td>
+								<td class="eva-value"></td>
+							</tr>
+						<tbody>
+					</table>
 				</div>
-				<table class="eva-params">
-					<tbody>
-						<tr class="eva-param eva-tpl s-h">
-							<td class="eva-key"></td>
-							<td class="eva-value"></td>
-						</tr>
-					<tbody>
-				</table>
-				<div class="eva-response"></div>
 			</div>
 		</div>
 
