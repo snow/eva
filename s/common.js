@@ -146,7 +146,10 @@ jQuery.noConflict();
 						find('.eva-ing').removeClass('eva-ing').
 						end().find('.eva-status').text( xhr.status + ' : ' + xhr.statusText + ' / ' + textStatus);
 
-					$condition.find('.eva-response').text( xhr.responseText);
+					if('parseerror' === textStatus)
+					{
+						$condition.find('.eva-response').text( xhr.responseText);
+					}
 				}
 			});
 		},
@@ -243,7 +246,7 @@ jQuery.noConflict();
 		});
 
 		// init data
-		$.get('data.xml',eva.loadTestData,'xml');
+		$.get('data_pseudoApi.xml',eva.loadTestData,'xml');
 	});
 
 })(jQuery);
