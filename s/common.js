@@ -246,7 +246,7 @@ jQuery.noConflict();
 		});
 
 		// init data
-		$.get('data_pseudoApi.xml',eva.loadTestData,'xml');
+		$.get('data.xml',eva.loadTestData,'xml');
 	});
 
 })(jQuery);
