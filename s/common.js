@@ -146,7 +146,7 @@ jQuery.noConflict();
 						find('.eva-ing').removeClass('eva-ing').
 						end().find('.eva-status').text( xhr.status + ' : ' + xhr.statusText + ' / ' + textStatus);
 
-					if('parseerror' === textStatus)
+					if('parsererror' === textStatus)
 					{
 						$condition.find('.eva-response').text( xhr.responseText);
 					}
