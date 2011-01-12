@@ -22,6 +22,11 @@
 						<key>email</key>
 						<value>snow@firebloom.cc</value>
 					</param>
+					<validationExpression>
+						<![CDATA[
+							return data.errorCode === '04';
+						]]>
+					</validationCallback>
 				</condition>
 
 				<!-- empty username -->

@@ -3,72 +3,24 @@ jQuery.noConflict();
 (function($)
 {
 	window.eva = {
-
 		/*  */
 
 		/* common element */
 		container: false,
+		api: false,
 		tpl: {},
-		testDataLoaded: false,
-		apiBaseUri: false,
-		apiEntries: {},
+		debug: false,
 
 		/* */
-		loadTestData: function(data)
-		{
-			data = $(data);
-			eva.apiBaseUri = data.find('apiBaseUri').text();
-
-			data.find('apiLi').each(function(apiIndex,apiLi)
-			{
-				var apiLi = $(apiLi);
-				var apiObj = {
-					path: apiLi.find('path').text(),
-					type: ( ( apiLi.find('method').text().toUpperCase() === 'POST' )?'POST':'GET' ),
-					conditions: []
-				};
-
-				apiLi.find('condition').each(function(conditionIndex,condition)
-				{
-					var condition = $(condition);
-					var data = {};
-					condition.find('param').each(function(i,param)
-					{
-						var param = $(param);
-						data[param.find('key').text()] = param.find('value').text();
-					});
-					apiObj.conditions.push(data);
-				});
-
-				// put object of current api method in api entry tree
-				var entityAndMethod = apiObj.path.split('/');
-				// remove the first element if it's empty
-				if( !entityAndMethod[0] )
-				{
-					entityAndMethod.shift();
-				}
-				// eva.apiEntries[method][function] = apiObj
-				if( 'undefined' === typeof eva.apiEntries[entityAndMethod[0]] )
-				{
-					eva.apiEntries[entityAndMethod[0]] = {};
-				}
-				eva.apiEntries[entityAndMethod[0]][entityAndMethod[1]] =apiObj;
-			});
-
-			eva.testDataLoaded = true;
-			eva.buildMarkup();
-
-			//console.log(eva.apiEntries);
-		},
 
 		buildMarkup: function()
 		{
-			if(!eva.testDataLoaded)
+			if(!eva.api)
 			{
-				throw 'test data not yet loaded';
+				throw 'api data not loaded';
 			}
 
-			$.each(eva.apiEntries, function(entityName,entity)
+			$.each(eva.api.entries, function(entityName,entity)
 			{
 				var $entity = eva.tpl.entity.clone().appendTo('#eva-main');
 				$entity.find('.eva-entityName').text(entityName);
@@ -90,16 +42,19 @@ jQuery.noConflict();
 					{
 						var $condition = eva.tpl.condition.clone();
 
-						$condition.find('.eva-paramSerial').text(condition.toSource()).
+						var paramSerial = condition.params.toSource();
+						paramSerial = paramSerial.substr(2,paramSerial.length-4);
+
+						$condition.find('.eva-paramSerial').text(paramSerial).
 							after('<span class="eva-collapse eva-col-r">collapse</span>');
 
 						var $params = $condition.find('.eva-params');
 
-						$.each(condition, function(key, value)
+						$.each(condition.params, function(key, value)
 						{
 							eva.tpl.param.clone().
 								find('.eva-key').text(key).
-								end().find('.eva-value').text(value).
+								end().find('.eva-value').text( eva.printJSON(value) ).
 								end().appendTo($params);
 						});
 
@@ -115,10 +70,10 @@ jQuery.noConflict();
 		runCondition: function(method,condition,$condition)
 		{
 			$.ajax({
-				url: eva.apiBaseUri + method.path,
+				url: eva.api.baseUri + method.path,
 				type: method.type,
 				dataType: 'json',
-				data: condition,
+				data: condition.params,
 				beforeSend: function(xhr, settings)
 				{
 					$condition.find('.eva-status').addClass('eva-ing');
@@ -127,15 +82,16 @@ jQuery.noConflict();
 				{
 					$condition.find('.eva-ing').removeClass('eva-ing');
 
-					if( parseInt(data.errorCode) )
-					{
-						$condition.addClass('eva-error').
-							find('.eva-status').text( '500 : ' + data.sysMsg );
-					}
-					else
+					if( ( ( 'function' === typeof condition.validator ) && condition.validator(data) ) ||
+						( !parseInt(data.errorCode) ) )
 					{
 						$condition.addClass('eva-success').
 							find('.eva-status').text( xhr.status + ' : ' + xhr.statusText );
+					}
+					else
+					{
+						$condition.addClass('eva-error').
+							find('.eva-status').text( '500 : ' + data.sysMsg );
 					}
 
 					$condition.find('.eva-response').html( '<pre>'+ eva.printJSON($.parseJSON(xhr.responseText)) +'</pre>' );
@@ -173,10 +129,29 @@ jQuery.noConflict();
 		printJSON: function (obj, depth)
 		{
 			var output = '';
+			var lastComma;
 
 			if( 'undefined' === typeof depth ) { depth=0; }
 
-			if( 'object' === typeof obj )
+			if($.isArray(obj))
+			{
+				output = "[\n";
+
+				$.each(obj ,function(i ,ele)
+				{
+					output += eva.printJSON(ele, ++depth) + ', ';
+				});
+
+				lastComma = output.length-2
+
+				if( ',' === output[lastComma])
+				{
+					output = output.substr(0,lastComma) + "\n";
+				}
+
+				output += "]\n";
+			}
+			else if( 'object' === typeof obj )
 			{
 				output = "{\n";
 
@@ -199,7 +174,7 @@ jQuery.noConflict();
 					}
 				});
 
-				var lastComma = output.length-2
+				lastComma = output.length-2
 
 				if( ',' === output[lastComma])
 				{
@@ -210,13 +185,11 @@ jQuery.noConflict();
 			}
 			else
 			{
-				throw 'eva.printJSON need a object,'+typeof obj+' given';
+				output = obj;
 			}
 
 			return output;
-		},
-
-		z: 0
+		}
 	};
 
 	$(function(){
@@ -245,8 +218,22 @@ jQuery.noConflict();
 			}
 		});
 
-		// init data
-		$.get('data.xml',eva.loadTestData,'xml');
+		// replace attributes when running on develop host
+		if('eva.fe' === location.host)
+		{
+			eva.debug = true;
+			eva.api.baseUri = 'http://eva.fe/pseudoApi';
+
+			$.each(eva.api.entries, function(entryName, entry)
+			{
+				$.each(entry, function(methodName, method)
+				{
+					method.type = 'GET';
+				});
+			});
+		}
+
+		eva.buildMarkup();
 	});
 
 })(jQuery);
