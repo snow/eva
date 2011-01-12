@@ -17,8 +17,7 @@
 	.eva-success .eva-summary {color:#999}
 
 	.eva-summary .eva-status,
-	.eva-summary .eva-expand,
-	.eva-summary .eva-collapse {display:block;padding:1em}
+	.eva-summary .eva-desc {display:block;padding:1em}
 
 	.eva-summary .eva-status {padding-left:2em;margin-left:1em}
 	.eva-summary .eva-status.eva-ing {background:url(/img/loading.gif) no-repeat left center}
