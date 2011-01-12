@@ -19,7 +19,7 @@
 							},
 							validator : function(data)
 							{
-								return -1 === $.inArray( parseInt(data.errorCode), [0, 4] );
+								return -1 < $.inArray( parseInt(data.errorCode), [0, 4] );
 							}
 						},
 						{
