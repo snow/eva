@@ -90,19 +90,11 @@ jQuery.noConflict();
 				{
 					$condition.find('.eva-ing').removeClass('eva-ing');
 
-					if( ( ( 'function' === typeof condition.validator ) && condition.validator(data) ) ||
-						( !parseInt(data.errorCode) ) )
-					{
-						$condition.addClass('eva-success').
-							find('.eva-status').text( xhr.status + ' : ' + (data.sysMsg?data.sysMsg:xhr.statusText) );
-					}
-					else
-					{
-						$condition.addClass('eva-error').
-							find('.eva-status').text( '500 : ' + data.sysMsg );
-					}
+					$condition.addClass(( ( ( ( 'function' === typeof condition.validator ) && condition.validator(data) ) ||
+						( !parseInt(data.errorCode) ) )? 'eva-success' : 'eva-error' ));
 
-					$condition.find('.eva-response').html( '<pre>'+ eva.printJSON($.parseJSON(xhr.responseText)) +'</pre>' );
+					$condition.find('.eva-status').text( xhr.status + ' : ' + (data.sysMsg?data.sysMsg:xhr.statusText) ).
+						end().find('.eva-response').html( '<pre>'+ eva.printJSON($.parseJSON(xhr.responseText)) +'</pre>' );
 				},
 				error: function(xhr, textStatus, errorThrown)
 				{
