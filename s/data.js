@@ -11,6 +11,7 @@
 					type : "POST",
 					conditions : [
 						{
+							desc : "Success or duplicate",
 							params : {
 								username : "snowhs",
 								email : "snow@firebloom.cc",
@@ -18,10 +19,11 @@
 							},
 							validator : function(data)
 							{
-								return parseInt(data.errorCode) === 4;
+								return -1 === $.inArray( parseInt(data.errorCode), [0, 4] );
 							}
 						},
 						{
+							desc : "Empty username",
 							params : {
 								username : "",
 								email : "snow@firebloom.cc",
@@ -33,6 +35,7 @@
 							}
 						},
 						{
+							desc : "Empty email",
 							params : {
 								username : "snowhs",
 								email : "",
@@ -44,6 +47,7 @@
 							}
 						},
 						{
+							desc : "Empty password",
 							params : {
 								username : "snowhs",
 								email : "snow@firebloom.cc",
@@ -55,6 +59,7 @@
 							}
 						},
 						{
+							desc : "Empty email and password",
 							params : {
 								username : "snowhs",
 								email : "",
@@ -62,6 +67,7 @@
 							}
 						},
 						{
+							desc : "Invalid username",
 							params : {
 								username : "snow.%^hs",
 								email : "snow@firebloom.cc",
@@ -69,6 +75,7 @@
 							}
 						},
 						{
+							desc : "Invalid email",
 							params : {
 								username : "snowhs",
 								email : "snowreblooc",
@@ -76,6 +83,7 @@
 							}
 						},
 						{
+							desc : "Invalid password",
 							params : {
 								username : "snowhs",
 								email : "snow@firebloom.cc",
@@ -89,12 +97,14 @@
 					type : "POST",
 					conditions : [
 						{
+							desc : "Normal",
 							params : {
 								username : "snowhs",
 								password : "asdfgh"
 							}
 						},
 						{
+							desc : "Empty username",
 							params : {
 								username : "",
 								password : "asdfgh"

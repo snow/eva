@@ -42,11 +42,19 @@ jQuery.noConflict();
 					{
 						var $condition = eva.tpl.condition.clone();
 
-						var paramSerial = condition.params.toSource();
-						paramSerial = paramSerial.substr(2,paramSerial.length-4);
+						var summary;
 
-						$condition.find('.eva-paramSerial').text(paramSerial).
-							after('<span class="eva-collapse eva-col-r">collapse</span>');
+						if( condition.desc )
+						{
+							summary = condition.desc;
+						}
+						else
+						{
+							summary = condition.params.toSource();
+							summary = summary.substr(2,summary.length-4);
+						}
+
+						$condition.find('.eva-desc').text(summary);
 
 						var $params = $condition.find('.eva-params');
 
@@ -86,7 +94,7 @@ jQuery.noConflict();
 						( !parseInt(data.errorCode) ) )
 					{
 						$condition.addClass('eva-success').
-							find('.eva-status').text( xhr.status + ' : ' + xhr.statusText );
+							find('.eva-status').text( xhr.status + ' : ' + (data.sysMsg?data.sysMsg:xhr.statusText) );
 					}
 					else
 					{
@@ -113,17 +121,13 @@ jQuery.noConflict();
 		expandCondition: function(condition)
 		{
 			condition.removeClass('eva-collapsed').addClass('eva-expanded').
-				find('.eva-collapse').show().
-				end().find('.eva-expand').hide().
-				end().find('.eva-extra').slideDown('fast');
+				find('.eva-extra').slideDown('fast');
 		},
 
 		collapseCondition: function(condition)
 		{
 			condition.removeClass('eva-expanded').addClass('eva-collapsed').
-				find('.eva-collapse').hide().
-				end().find('.eva-expand').show().
-				end().find('.eva-extra').slideUp('fast');
+				find('.eva-extra').slideUp('fast');
 		},
 
 		printJSON: function (obj, depth)
