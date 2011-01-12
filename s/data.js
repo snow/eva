@@ -6,31 +6,6 @@
 		baseUri : "http://192.168.1.46/icdServer/api",
 		entries : {
 			account : {
-				test : {
-					path : "/account/test",
-					type : "POST",
-					conditions : [
-						{
-							params : {
-								foo : "bar",
-								bar : {
-									asdfgh : "9i4uy34"
-								}
-							}
-						},
-						{
-							params : {
-								foo : "bar",
-								bar : [
-									"asdfgh"
-								]
-							},
-							validator : function(data) {
-								return  1 === parseInt(data.errorCode);
-							}
-						}
-					]
-				},
 				signup : {
 					path : "/account/signup",
 					type : "POST",
@@ -40,6 +15,10 @@
 								username : "snowhs",
 								email : "snow@firebloom.cc",
 								password : "asdfgh"
+							},
+							validator : function(data)
+							{
+								return parseInt(data.errorCode) === 4;
 							}
 						},
 						{
@@ -47,6 +26,10 @@
 								username : "",
 								email : "snow@firebloom.cc",
 								password : "asdfgh"
+							},
+							validator : function(data)
+							{
+								return parseInt(data.errorCode) === 5;
 							}
 						},
 						{
@@ -54,6 +37,10 @@
 								username : "snowhs",
 								email : "",
 								password : "asdfgh"
+							},
+							validator : function(data)
+							{
+								return parseInt(data.errorCode) === 3;
 							}
 						},
 						{
@@ -61,6 +48,10 @@
 								username : "snowhs",
 								email : "snow@firebloom.cc",
 								password : ""
+							},
+							validator : function(data)
+							{
+								return parseInt(data.errorCode) === 2;
 							}
 						},
 						{
