@@ -126,13 +126,27 @@
 							params : {
 								username : '',
 								password : 'asdfgh'
+							},
+							validator : function(data)
+							{
+								if( parseInt(data.errorCode, 10) !== 5 )
+								{
+									throw data.sysMsg;
+								}
 							}
 						},
 						{
 							desc : 'missing password',
 							params : {
 								username : 'snowhs',
-								password : 'asdfgh'
+								password : ''
+							},
+							validator : function(data)
+							{
+								if( parseInt(data.errorCode, 10) !== 2 )
+								{
+									throw data.sysMsg;
+								}
 							}
 						},
 						{
@@ -140,6 +154,13 @@
 							params : {
 								username : 'snowhssss',
 								password : 'asdfgh'
+							},
+							validator : function(data)
+							{
+								if( parseInt(data.errorCode, 10) !== 1 )
+								{
+									throw data.sysMsg;
+								}
 							}
 						}
 					]
