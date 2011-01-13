@@ -63,7 +63,12 @@
 								username : 'snowhs',
 								email : '',
 								password : ''
-							}
+							},
+							validator : function(data)
+                                                        {
+                                                                return -1 < $.inArray( parseInt(data.errorCode, 10), [2, 3] );
+                                                        }
+
 						},
 						{
 							desc : 'invalid username',
