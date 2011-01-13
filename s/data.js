@@ -18,7 +18,10 @@
 							},
 							validator : function(data)
 							{
-								return -1 < $.inArray( parseInt(data.errorCode, 10), [0, 4] );
+								if( 0 > $.inArray( parseInt(data.errorCode, 10), [0, 4] ) )
+								{
+									throw data.sysMsg;
+								}
 							}
 						},
 						{
@@ -30,7 +33,10 @@
 							},
 							validator : function(data)
 							{
-								return parseInt(data.errorCode, 10) === 5;
+								if( parseInt(data.errorCode, 10) !== 5 )
+								{
+									throw data.sysMsg;
+								}
 							}
 						},
 						{
@@ -42,7 +48,10 @@
 							},
 							validator : function(data)
 							{
-								return parseInt(data.errorCode, 10) === 3;
+								if( parseInt(data.errorCode, 10) !== 3 )
+								{
+									throw data.sysMsg;
+								}
 							}
 						},
 						{
@@ -54,7 +63,10 @@
 							},
 							validator : function(data)
 							{
-								return parseInt(data.errorCode, 10) === 2;
+								if( parseInt(data.errorCode, 10) !== 2 )
+								{
+									throw data.sysMsg;
+								}
 							}
 						},
 						{
@@ -65,9 +77,12 @@
 								password : ''
 							},
 							validator : function(data)
-                                                        {
-                                                                return -1 < $.inArray( parseInt(data.errorCode, 10), [2, 3] );
-                                                        }
+							{
+								if( 0 > $.inArray( parseInt(data.errorCode, 10), [2, 3] ) )
+								{
+									throw data.sysMsg;
+								}
+							}
 
 						},
 						{
