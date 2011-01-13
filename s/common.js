@@ -6,14 +6,15 @@ jQuery.noConflict();
 		/*  */
 
 		/* common element */
-		container: false,
-		api: false,
-		tpl: {},
-		debug: false,
+		container : false,
+		api : false,
+		tpl : {},
+		debug : false,
+		conditionIdSq : 0,
 
 		/* */
 
-		buildMarkup: function()
+		buildMarkup : function()
 		{
 			if(!eva.api)
 			{
@@ -28,6 +29,8 @@ jQuery.noConflict();
 
 				$.each(entity, function(methodName,method)
 				{
+					method.entity = entity;
+
 					var $method = eva.tpl.method.clone().appendTo($entityBody);
 					$method.find('.eva-methodName').text(methodName);
 					var $methodBody = $method.find('.bd');
@@ -40,7 +43,10 @@ jQuery.noConflict();
 
 					$.each(method.conditions, function(i,condition)
 					{
-						var $condition = eva.tpl.condition.clone();
+						condition.method = method;
+						condition.id = 'eva-condition-' + (++eva.conditionIdSq);
+
+						var $condition = eva.tpl.condition.clone().attr('id',condition.id);
 
 						var summary;
 
@@ -69,17 +75,19 @@ jQuery.noConflict();
 						$methodBody.append($condition);
 						eva.collapseCondition($condition);
 
-						eva.runCondition(method,condition,$condition);
+						eva.runCondition(condition);
 					});
 				});
 			});
 		},
 
-		runCondition: function(method,condition,$condition)
+		runCondition : function(condition)
 		{
+			var $condition = $('#'+condition.id);
+
 			$.ajax({
-				url: eva.api.baseUri + method.path,
-				type: method.type,
+				url: eva.api.baseUri + '/' + condition.method.path,
+				type: condition.method.type,
 				dataType: 'json',
 				data: condition.params,
 				beforeSend: function(xhr, settings)
@@ -110,19 +118,19 @@ jQuery.noConflict();
 			});
 		},
 
-		expandCondition: function(condition)
+		expandCondition : function(condition)
 		{
 			condition.removeClass('eva-collapsed').addClass('eva-expanded').
 				find('.eva-extra').slideDown('fast');
 		},
 
-		collapseCondition: function(condition)
+		collapseCondition : function(condition)
 		{
 			condition.removeClass('eva-expanded').addClass('eva-collapsed').
 				find('.eva-extra').slideUp('fast');
 		},
 
-		printJSON: function (obj, depth)
+		printJSON : function (obj, depth)
 		{
 			var output = '';
 			var lastComma;
@@ -195,6 +203,7 @@ jQuery.noConflict();
 		{
 			var _tpl = $(this).removeClass('eva-tpl').removeClass('s-h').remove();
 			eva.tpl[_tpl.attr('tplName')] = _tpl;
+			_tpl.removeAttr('tplName');
 		});
 
 		eva.container.delegate('.eva-summary','click',function(e)

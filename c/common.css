@@ -20,7 +20,7 @@
 	.eva-summary .eva-desc {display:block;padding:1em}
 
 	.eva-summary .eva-status {padding-left:2em;margin-left:1em}
-	.eva-summary .eva-status.eva-ing {background:url(/img/loading.gif) no-repeat left center}
+	.eva-summary .eva-status.eva-ing {background:url(../img/loading.gif) no-repeat left center}
 
 .eva-condition .eva-extra {background:#f6f6f6}
 
