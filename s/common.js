@@ -23,6 +23,7 @@ jQuery.noConflict();
 
 			$.each(eva.api.entries, function(entityName,entity)
 			{
+				entity.name = entityName;
 				var $entity = eva.tpl.entity.clone().appendTo('#eva-main');
 				$entity.find('.eva-entityName').text(entityName);
 				var $entityBody = $entity.find('.bd');
@@ -30,6 +31,7 @@ jQuery.noConflict();
 				$.each(entity, function(methodName,method)
 				{
 					method.entity = entity;
+					method.name = methodName;
 
 					var $method = eva.tpl.method.clone().appendTo($entityBody);
 					$method.find('.eva-methodName').text(methodName);
@@ -86,7 +88,7 @@ jQuery.noConflict();
 			var $condition = $('#'+condition.id);
 
 			$.ajax({
-				url: eva.api.baseUri + '/' + condition.method.path,
+				url: eva.api.baseUri + '/' + condition.method.entity.name + '/' + condition.method.name,
 				type: condition.method.type,
 				dataType: 'json',
 				data: condition.params,
