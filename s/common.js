@@ -106,28 +106,25 @@ jQuery.noConflict();
 				success: function(data, textStatus, xhr)
 				{
 					$condition.find('.eva-ing').removeClass('eva-ing');
-					var class;
-					var message;
+					var class, message;
 
 					try{
-						if(data)
-						{
-							if( 'function' === typeof condition.validator )
-							{
-								condition.validator(data);
-							}
-							else if( parseInt(data.errorCode) )
-							{
-								throw data.sysMsg;
-							}
-						}
-						else
+						if(!data)
 						{
 							throw 'empty response';
 						}
 
+						if( 'function' === typeof condition.validator )
+						{
+							condition.validator(data);
+						}
+						else if( parseInt(data.errorCode) )
+						{
+							throw data.sysMsg;
+						}
+
 						class = 'eva-success';
-						message = data.sysMsg?data.sysMsg:xhr.statusText;
+						message = data.sysMsg ? data.sysMsg : xhr.statusText;
 					}
 					catch(error)
 					{
@@ -137,7 +134,7 @@ jQuery.noConflict();
 
 					$condition.addClass(class).
 						find('.eva-status').text( xhr.status + ' : ' + message ).
-						end().find('.eva-response').html( '<pre>'+ eva.printJSON($.parseJSON(xhr.responseText)) +'</pre>' );
+						end().find('.eva-response').html( data ? '<pre>'+ eva.printJSON($.parseJSON(xhr.responseText)) +'</pre>' : '' );
 				},
 				error: function(xhr, textStatus, errorThrown)
 				{
