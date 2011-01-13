@@ -18,7 +18,7 @@
 							},
 							validator : function(data)
 							{
-								return -1 < $.inArray( parseInt(data.errorCode), [0, 4] );
+								return -1 < $.inArray( parseInt(data.errorCode, 10), [0, 4] );
 							}
 						},
 						{
@@ -30,7 +30,7 @@
 							},
 							validator : function(data)
 							{
-								return parseInt(data.errorCode) === 5;
+								return parseInt(data.errorCode, 10) === 5;
 							}
 						},
 						{
@@ -42,7 +42,7 @@
 							},
 							validator : function(data)
 							{
-								return parseInt(data.errorCode) === 3;
+								return parseInt(data.errorCode, 10) === 3;
 							}
 						},
 						{
@@ -54,7 +54,7 @@
 							},
 							validator : function(data)
 							{
-								return parseInt(data.errorCode) === 2;
+								return parseInt(data.errorCode, 10) === 2;
 							}
 						},
 						{
@@ -228,7 +228,7 @@
 								postType : 1,
 								queryType : 2
 							}
-						},
+						}
 					]
 				},
 				getInfo : {
@@ -247,7 +247,7 @@
 						{
 							desc : 'non exists place',
 							params : {
-								id : 999999999,
+								id : 999999999
 							}
 						}
 					]
@@ -268,7 +268,7 @@
 						{
 							desc : 'non exists place',
 							params : {
-								id : 999999999,
+								id : 999999999
 							}
 						}
 					]
@@ -289,7 +289,7 @@
 						{
 							desc : 'non exists place',
 							params : {
-								id : 999999999,
+								id : 999999999
 							}
 						}
 					]
@@ -310,7 +310,7 @@
 						{
 							desc : 'non exists place',
 							params : {
-								id : 999999999,
+								id : 999999999
 							}
 						}
 					]
@@ -364,13 +364,13 @@
 						{
 							desc : 'default',
 							params : {
-								id : 10009,
+								id : 10009
 							}
 						},
 						{
 							desc : 'default',
 							params : {
-								id : 10021,
+								id : 10021
 							}
 						},
 						{
@@ -685,7 +685,7 @@
 						{
 							desc : 'default',
 							params : {
-								text : '迟到了要自觉买零食！！',
+								text : '迟到了要自觉买零食！！'
 							}
 						},
 						{

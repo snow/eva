@@ -10,7 +10,7 @@ jQuery.noConflict();
 		api : false,
 		tpl : {},
 		debug : false,
-		conditionIdSq : 0,
+		conditions : [],
 
 		/* */
 
@@ -23,15 +23,13 @@ jQuery.noConflict();
 
 			$.each(eva.api.entries, function(entityName,entity)
 			{
-				entity.name = entityName;
 				var $entity = eva.tpl.entity.clone().appendTo('#eva-main');
 				$entity.find('.eva-entityName').text(entityName);
 				var $entityBody = $entity.find('.bd');
 
 				$.each(entity, function(methodName,method)
 				{
-					method.entity = entity;
-					method.name = methodName;
+					method.url = eva.api.baseUri + '/' + entityName + '/' + methodName;
 
 					var $method = eva.tpl.method.clone().appendTo($entityBody);
 					$method.find('.eva-methodName').text(methodName);
@@ -45,10 +43,18 @@ jQuery.noConflict();
 
 					$.each(method.conditions, function(i,condition)
 					{
+						if(eva.debug && (eva.conditions.length >= 10))
+						{
+							return;
+						}
+
 						condition.method = method;
-						condition.id = 'eva-condition-' + (++eva.conditionIdSq);
+						eva.conditions.push(condition);
+						condition.id = 'eva-condition-' + (eva.conditions.length - 1);
 
 						var $condition = eva.tpl.condition.clone().attr('id',condition.id);
+
+						$condition.find('.eva-status').addClass('eva-available').text('||');
 
 						var summary;
 
@@ -76,8 +82,6 @@ jQuery.noConflict();
 
 						$methodBody.append($condition);
 						eva.collapseCondition($condition);
-
-						eva.runCondition(condition);
 					});
 				});
 			});
@@ -86,15 +90,16 @@ jQuery.noConflict();
 		runCondition : function(condition)
 		{
 			var $condition = $('#'+condition.id);
+			$condition.find('.eva-status').removeClass('eva-available').addClass('eva-waiting').text('...');
 
 			$.ajax({
-				url: eva.api.baseUri + '/' + condition.method.entity.name + '/' + condition.method.name,
+				url: condition.method.url,
 				type: condition.method.type,
 				dataType: 'json',
 				data: condition.params,
 				beforeSend: function(xhr, settings)
 				{
-					$condition.find('.eva-status').addClass('eva-ing');
+					$condition.find('.eva-status').removeClass('eva-available').addClass('eva-ing').text('');
 				},
 				success: function(data, textStatus, xhr)
 				{
@@ -241,6 +246,18 @@ jQuery.noConflict();
 		}
 
 		eva.buildMarkup();
+
+		var curCondition = 0;
+		var sq = setInterval(function()
+		{
+			eva.runCondition(eva.conditions[curCondition]);
+			curCondition++;
+
+			if(curCondition >= eva.conditions.length)
+			{
+				clearInterval(sq);
+			}
+		},200);
 	});
 
 })(jQuery);
