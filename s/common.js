@@ -11,6 +11,7 @@ jQuery.noConflict();
 		tpl : {},
 		debug : false,
 		conditions : [],
+		exampleUid : 10007,
 
 		/* */
 
@@ -100,6 +101,7 @@ jQuery.noConflict();
 				beforeSend: function(xhr, settings)
 				{
 					$condition.find('.eva-status').removeClass('eva-available').addClass('eva-ing').text('');
+					xhr.setRequestHeader('uid',eva.exampleUid);
 				},
 				success: function(data, textStatus, xhr)
 				{
