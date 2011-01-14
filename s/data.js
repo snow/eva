@@ -173,7 +173,6 @@
 						{
 							desc : 'default checkin',
 							params : {
-								uid : 10007,
 								placeId : 24875,
 								text : 'wifi慢到发疯啊啊啊啊',
 								photo : '',
@@ -184,7 +183,6 @@
 						{
 							desc : 'default tip',
 							params : {
-								uid : 10007,
 								placeId : 24875,
 								text : '￥28的基本饮料可以免费续杯，有很多种可以选，每次续杯都可以选不同的。wifi慢得发疯——不过我就没见过哪家咖啡的wifi快的。',
 								photo : '',
@@ -193,20 +191,8 @@
 							}
 						},
 						{
-							desc : 'missing uid',
-							params : {
-								uid : '',
-								placeId : 24875,
-								text : 'wifi慢到发疯啊啊啊啊',
-								photo : '',
-								toSync : false,
-								type : 2
-							}
-						},
-						{
 							desc : 'missing placeId',
 							params : {
-								uid : 10007,
 								placeId : '',
 								text : 'wifi慢到发疯啊啊啊啊',
 								photo : '',
@@ -217,7 +203,6 @@
 						{
 							desc : 'tip missing text',
 							params : {
-								uid : 10007,
 								placeId : 24875,
 								text : '',
 								photo : '',
