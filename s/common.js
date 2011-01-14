@@ -10,7 +10,7 @@ jQuery.noConflict();
 		api : false,
 		tpl : {},
 		debug : false,
-		conditions : [],
+		conditionLs : [],
 		exampleUid : 10007,
 
 		/* */
@@ -44,14 +44,14 @@ jQuery.noConflict();
 
 					$.each(method.conditions, function(i,condition)
 					{
-						if(eva.debug && (eva.conditions.length >= 10))
+						if(eva.debug && (eva.conditionLs.length >= 10))
 						{
 							return;
 						}
 
 						condition.method = method;
-						eva.conditions.push(condition);
-						condition.id = 'eva-condition-' + (eva.conditions.length - 1);
+						eva.conditionLs.push(condition);
+						condition.id = 'eva-condition-' + (eva.conditionLs.length - 1);
 
 						var $condition = eva.tpl.condition.clone().attr('id',condition.id);
 
@@ -84,81 +84,137 @@ jQuery.noConflict();
 						$methodBody.append($condition);
 						eva.collapseCondition($condition);
 					});
+
+					eva.collapseMethod($method);
+				});
+
+				eva.collapseEntity($entity);
+			});
+		},
+
+		queueCondition : function($conditions)
+		{
+			if(!$conditions.hasClass('eva-condition'))
+			{
+				$conditions = $conditions.find('.eva-condition');
+			}
+
+			$conditions.each(function(i, ele)
+			{
+				var $condition = $(ele);
+				var condition = false;
+
+				try{
+					var conditionIndex = parseInt($condition.attr('id').split('-')[2],10);
+					condition = eva.conditionLs[conditionIndex];
+				}
+				catch(e)
+				{
+					return;
+				}
+
+				$condition.find('.eva-status').removeClass('eva-available').addClass('eva-waiting').text('...');
+
+				var start, end;
+				start = (new Date()).getTime();
+
+				$.ajax({
+					url: condition.method.url,
+					type: condition.method.type,
+					dataType: 'json',
+					data: condition.params,
+					beforeSend: function(xhr, settings)
+					{
+						$condition.find('.eva-status').removeClass('eva-available').addClass('eva-ing').text('');
+						xhr.setRequestHeader('uid',eva.exampleUid);
+					},
+					success: function(data, textStatus, xhr)
+					{
+						$condition.find('.eva-ing').removeClass('eva-ing');
+						var class, message;
+
+						try{
+							if(!data)
+							{
+								throw 'empty response';
+							}
+
+							if( 'function' === typeof condition.validator )
+							{
+								condition.validator(data);
+							}
+							else if( parseInt(data.errorCode) )
+							{
+								throw data.sysMsg;
+							}
+
+							class = 'eva-success';
+							message = data.sysMsg ? data.sysMsg : xhr.statusText;
+						}
+						catch(error)
+						{
+							class = 'eva-error';
+							message = error;
+						}
+
+						end = (new Date()).getTime();
+						duration = end - start;
+
+						$condition.addClass(class).
+							find('.eva-status').text( '[ ' + duration + 'ms ] ' + xhr.status + ' : ' + message ).
+							end().find('.eva-response').html( data ? '<pre>'+ eva.printJSON($.parseJSON(xhr.responseText)) +'</pre>' : '' );
+					},
+					error: function(xhr, textStatus, errorThrown)
+					{
+						end = (new Date()).getTime();
+						duration = end - start;
+
+						$condition.addClass('eva-error').
+							find('.eva-ing').removeClass('eva-ing').
+							end().find('.eva-status').text(  '[ ' + duration + 'ms ] ' + xhr.status + ' : ' + xhr.statusText + ' / ' + textStatus);
+
+						if('parsererror' === textStatus)
+						{
+							$condition.find('.eva-response').text( xhr.responseText);
+						}
+					}
 				});
 			});
 		},
 
-		runCondition : function(condition)
+		expandEntity : function($entity)
 		{
-			var $condition = $('#'+condition.id);
-			$condition.find('.eva-status').removeClass('eva-available').addClass('eva-waiting').text('...');
-
-			$.ajax({
-				url: condition.method.url,
-				type: condition.method.type,
-				dataType: 'json',
-				data: condition.params,
-				beforeSend: function(xhr, settings)
-				{
-					$condition.find('.eva-status').removeClass('eva-available').addClass('eva-ing').text('');
-					xhr.setRequestHeader('uid',eva.exampleUid);
-				},
-				success: function(data, textStatus, xhr)
-				{
-					$condition.find('.eva-ing').removeClass('eva-ing');
-					var class, message;
-
-					try{
-						if(!data)
-						{
-							throw 'empty response';
-						}
-
-						if( 'function' === typeof condition.validator )
-						{
-							condition.validator(data);
-						}
-						else if( parseInt(data.errorCode) )
-						{
-							throw data.sysMsg;
-						}
-
-						class = 'eva-success';
-						message = data.sysMsg ? data.sysMsg : xhr.statusText;
-					}
-					catch(error)
-					{
-						class = 'eva-error';
-						message = error;
-					}
-
-					$condition.addClass(class).
-						find('.eva-status').text( xhr.status + ' : ' + message ).
-						end().find('.eva-response').html( data ? '<pre>'+ eva.printJSON($.parseJSON(xhr.responseText)) +'</pre>' : '' );
-				},
-				error: function(xhr, textStatus, errorThrown)
-				{
-					$condition.addClass('eva-error').
-						find('.eva-ing').removeClass('eva-ing').
-						end().find('.eva-status').text( xhr.status + ' : ' + xhr.statusText + ' / ' + textStatus);
-
-					if('parsererror' === textStatus)
-					{
-						$condition.find('.eva-response').text( xhr.responseText);
-					}
-				}
-			});
+			$entity.removeClass('eva-collapsed').addClass('eva-expanded').
+				find('.eva-methodLs').slideDown('fast');
 		},
 
-		expandCondition : function(condition)
+		collapseEntity : function($entity)
 		{
-			condition.removeClass('eva-collapsed').addClass('eva-expanded').
+			$entity.removeClass('eva-expanded').addClass('eva-collapsed').
+				find('.eva-methodLs').slideUp('fast');
+		},
+
+		expandMethod : function($method)
+		{
+			$method.removeClass('eva-collapsed').addClass('eva-expanded').
+				find('.eva-conditionLs').slideDown('fast');
+		},
+
+		collapseMethod : function($method)
+		{
+			$method.removeClass('eva-expanded').addClass('eva-collapsed').
+				find('.eva-conditionLs').slideUp('fast');
+		},
+
+		expandCondition : function($condition)
+		{
+			$condition.removeClass('eva-collapsed').addClass('eva-expanded').
 				find('.eva-extra').slideDown('fast');
 		},
 
-		collapseCondition : function(condition)
+		collapseCondition : function($condition)
 		{
-			condition.removeClass('eva-expanded').addClass('eva-collapsed').
+			$condition.removeClass('eva-expanded').addClass('eva-collapsed').
 				find('.eva-extra').slideUp('fast');
 		},
 
@@ -255,6 +311,35 @@ jQuery.noConflict();
 			}
 		});
 
+		eva.container.delegate('.eva-run','click',function(e)
+		{
+			e.preventDefault();
+			var _$t = $(e.target);
+			if( _$t.hasClass('eva-run-entity') )
+			{
+				var _$entity = _$t.closest('.eva-entity');
+				eva.expandEntity(_$entity);
+				_$entity.find('.eva-method').each(function(i, ele)
+				{
+					var _$method = $(ele);
+					eva.expandMethod(_$method);
+				});
+				eva.queueCondition(_$entity);
+			}
+			else if( _$t.hasClass('eva-run-method') )
+			{
+				var _$method = _$t.closest('.eva-method');
+				eva.expandMethod(_$method);
+				eva.queueCondition(_$method);
+			}
+			else
+			{
+				var _$condition = _$t.closest('.eva-condition');
+				eva.expandCondition(_$condition);
+				eva.queueCondition(_$condition);
+			}
+		});
+
 		// replace attributes when running on develop host
 		if('eva.fe' === location.host)
 		{
@@ -272,17 +357,17 @@ jQuery.noConflict();
 
 		eva.buildMarkup();
 
-		var curCondition = 0;
-		var sq = setInterval(function()
-		{
-			eva.runCondition(eva.conditions[curCondition]);
-			curCondition++;
-
-			if(curCondition >= eva.conditions.length)
-			{
-				clearInterval(sq);
-			}
-		},200);
+// 		var curCondition = 0;
+// 		var sq = setInterval(function()
+// 		{
+// 			eva.runCondition(eva.conditions[curCondition]);
+// 			curCondition++;
+//
+// 			if(curCondition >= eva.conditions.length)
+// 			{
+// 				clearInterval(sq);
+// 			}
+// 		},200);
 	});
 
 })(jQuery);

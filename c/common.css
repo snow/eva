@@ -5,10 +5,15 @@
 
 /* common */
 .eva-entity {background:#eee}
-	.eva-entity h2 {padding:0 0.8em;margin:0;background:#333;color:#fff}
+	.eva-entity > .hd {background:#333;vertical-align:center}
+		.eva-entity > .hd h2 {float:left;padding:0 0.8em;margin:0;color:#fff}
+
+.eva-entity .hd a {width:8em;margin-left:150px;color:#fff;padding:0.75em 1em;text-align:center;display:block}
+.eva-entity .hd a:hover {background-color:#f6f6f6;color:#222}
 
 /* method */
-.eva-method h3 {padding:0.5em 1.6em;margin:0;background:#666;color:#fff}
+.eva-method > .hd {background:#666}
+	.eva-method > .hd h3 {float:left;padding:0.5em 1.6em;margin:0;color:#fff}
 
 /* condition */
 .eva-summary {display:block;color:#222;text-decoration:none}
