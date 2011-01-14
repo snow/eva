@@ -12,6 +12,7 @@ jQuery.noConflict();
 		debug : false,
 		conditionLs : [],
 		exampleUid : 10007,
+		conditionQueue : [],
 
 		/* */
 
@@ -99,86 +100,98 @@ jQuery.noConflict();
 				$conditions = $conditions.find('.eva-condition');
 			}
 
-			$conditions.each(function(i, ele)
+			eva.conditionQueue = $conditions.get();
+
+			eva.runQueue();
+		},
+
+		runQueue : function()
+		{
+			if(eva.conditionQueue.length)
 			{
-				var $condition = $(ele);
-				var condition = false;
+				eva.runCondition($(eva.conditionQueue.shift()));
+			}
+		},
 
-				try{
-					var conditionIndex = parseInt($condition.attr('id').split('-')[2],10);
-					condition = eva.conditionLs[conditionIndex];
-				}
-				catch(e)
+		runCondition : function($condition)
+		{
+			var condition = false;
+
+			try{
+				var conditionIndex = parseInt($condition.attr('id').split('-')[2],10);
+				condition = eva.conditionLs[conditionIndex];
+			}
+			catch(e)
+			{
+				return;
+			}
+
+			$condition.find('.eva-status').removeClass('eva-available').addClass('eva-waiting').text('...');
+
+			var start, end, statusClass, statusText, responseHtml;
+			start = (new Date()).getTime();
+
+			$.ajax({
+				url: condition.method.url,
+				type: condition.method.type,
+				dataType: 'json',
+				data: condition.params,
+				beforeSend: function(xhr, settings)
 				{
-					return;
-				}
+					$condition.find('.eva-status').removeClass('eva-available').addClass('eva-ing').text('');
+					xhr.setRequestHeader('uid',eva.exampleUid);
+				},
+				success: function(data, textStatus, xhr)
+				{
+					end = (new Date()).getTime();
 
-				$condition.find('.eva-status').removeClass('eva-available').addClass('eva-waiting').text('...');
-
-				var start, end;
-				start = (new Date()).getTime();
-
-				$.ajax({
-					url: condition.method.url,
-					type: condition.method.type,
-					dataType: 'json',
-					data: condition.params,
-					beforeSend: function(xhr, settings)
-					{
-						$condition.find('.eva-status').removeClass('eva-available').addClass('eva-ing').text('');
-						xhr.setRequestHeader('uid',eva.exampleUid);
-					},
-					success: function(data, textStatus, xhr)
-					{
-						$condition.find('.eva-ing').removeClass('eva-ing');
-						var class, message;
-
-						try{
-							if(!data)
-							{
-								throw 'empty response';
-							}
-
-							if( 'function' === typeof condition.validator )
-							{
-								condition.validator(data);
-							}
-							else if( parseInt(data.errorCode) )
-							{
-								throw data.sysMsg;
-							}
-
-							class = 'eva-success';
-							message = data.sysMsg ? data.sysMsg : xhr.statusText;
-						}
-						catch(error)
+					try{
+						if(!data)
 						{
-							class = 'eva-error';
-							message = error;
+							throw 'empty response';
 						}
 
-						end = (new Date()).getTime();
-						duration = end - start;
-
-						$condition.addClass(class).
-							find('.eva-status').text( '[ ' + duration + 'ms ] ' + xhr.status + ' : ' + message ).
-							end().find('.eva-response').html( data ? '<pre>'+ eva.printJSON($.parseJSON(xhr.responseText)) +'</pre>' : '' );
-					},
-					error: function(xhr, textStatus, errorThrown)
-					{
-						end = (new Date()).getTime();
-						duration = end - start;
-
-						$condition.addClass('eva-error').
-							find('.eva-ing').removeClass('eva-ing').
-							end().find('.eva-status').text(  '[ ' + duration + 'ms ] ' + xhr.status + ' : ' + xhr.statusText + ' / ' + textStatus);
-
-						if('parsererror' === textStatus)
+						if( 'function' === typeof condition.validator )
 						{
-							$condition.find('.eva-response').text( xhr.responseText);
+							condition.validator(data);
 						}
+						else if( parseInt(data.errorCode) )
+						{
+							throw data.sysMsg;
+						}
+
+						statusClass = 'eva-success';
+						statusText = data.sysMsg ? data.sysMsg : xhr.statusText;
 					}
-				});
+					catch(error)
+					{
+						statusClass = 'eva-error';
+						statusText = error;
+					}
+
+					responseHtml = data ? '<pre>'+ eva.printJSON($.parseJSON(xhr.responseText)) +'</pre>' : '';
+				},
+				error: function(xhr, httpStatusText, errorThrown)
+				{
+					end = (new Date()).getTime();
+					statusClass = 'eva-error';
+					statusText = xhr.statusText + ' / ' + httpStatusText;
+
+					if('parsererror' === httpStatusText)
+					{
+						responseHtml = xhr.responseText;
+					}
+				},
+				complete : function (xhr, textStatus)
+				{
+					duration = end - start;
+
+					$condition.addClass(statusClass).find('.eva-ing').removeClass('eva-ing').
+						end().find('.eva-status').text( '[ ' + duration + ' ms ] ' + xhr.status + ' : ' + statusText ).
+						end().find('.eva-response').html( responseHtml );
+
+					eva.runQueue();
+				}
 			});
 		},
 
@@ -356,18 +369,6 @@ jQuery.noConflict();
 		}
 
 		eva.buildMarkup();
-
-// 		var curCondition = 0;
-// 		var sq = setInterval(function()
-// 		{
-// 			eva.runCondition(eva.conditions[curCondition]);
-// 			curCondition++;
-//
-// 			if(curCondition >= eva.conditions.length)
-// 			{
-// 				clearInterval(sq);
-// 			}
-// 		},200);
 	});
 
 })(jQuery);
