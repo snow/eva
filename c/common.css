@@ -50,14 +50,3 @@ a:hover .eva-indicator {visibility:visible}
 
 .eva-condition .eva-response {padding:1em}
 	.eva-condition .eva-response pre {margin:0}
-
-/*.eva-summary {display:block;color:#222;text-decoration:none}
-	.eva-summary:focus,
-	.eva-summary:hover {background-color:#f6f6f6;color:#222}
-	.eva-success .eva-summary {color:#999}
-
-	.eva-summary .eva-status,
-	.eva-summary .eva-desc {display:block;padding:1em}
-
-	.eva-summary .eva-status {padding-left:2em;margin-left:1em}
-	.eva-summary .eva-status.eva-ing {background:url(../img/loading.gif) no-repeat left center}*/
