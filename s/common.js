@@ -56,7 +56,7 @@ jQuery.noConflict();
 
 						var $condition = eva.tpl.condition.clone().attr('id',condition.id);
 
-						$condition.find('.eva-status').addClass('eva-available').text('||');
+						$condition.find('.eva-status').addClass('eva-available');
 
 						var summary;
 
@@ -100,7 +100,8 @@ jQuery.noConflict();
 				$conditions = $conditions.find('.eva-condition');
 			}
 
-			eva.conditionQueue = $conditions.get();
+			eva.conditionQueue = $conditions.find('.eva-status').removeClass('eva-success eva-error').addClass('eva-queued').text('queued').
+				end().get();
 
 			eva.runQueue();
 		},
@@ -126,8 +127,6 @@ jQuery.noConflict();
 				return;
 			}
 
-			$condition.find('.eva-status').removeClass('eva-available').addClass('eva-waiting').text('...');
-
 			var start, end, statusClass, statusText, responseHtml;
 			start = (new Date()).getTime();
 
@@ -138,7 +137,7 @@ jQuery.noConflict();
 				data: condition.params,
 				beforeSend: function(xhr, settings)
 				{
-					$condition.find('.eva-status').removeClass('eva-available').addClass('eva-ing').text('');
+					$condition.find('.eva-status').removeClass('eva-queued').addClass('eva-ing').text('&nbsp;');
 					xhr.setRequestHeader('uid',eva.exampleUid);
 				},
 				success: function(data, textStatus, xhr)
@@ -180,6 +179,10 @@ jQuery.noConflict();
 					if('parsererror' === httpStatusText)
 					{
 						responseHtml = xhr.responseText;
+					}
+					else
+					{
+						responseHtml = '&nbsp;';
 					}
 				},
 				complete : function (xhr, textStatus)
@@ -343,7 +346,7 @@ jQuery.noConflict();
 				}
 			}
 		}).
-		delegate('.eva-summary', 'click', function(e)
+		delegate('.eva-toggleCondition', 'click', function(e)
 		{
 			e.preventDefault();
 			var _condition = $(e.target).closest('.eva-condition');
