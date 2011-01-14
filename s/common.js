@@ -198,25 +198,29 @@ jQuery.noConflict();
 		expandEntity : function($entity)
 		{
 			$entity.removeClass('eva-collapsed').addClass('eva-expanded').
-				find('.eva-methodLs').slideDown('fast');
+				find('.eva-entityName').prev('.eva-indicator').text('-').
+				end().end().find('.eva-methodLs').slideDown('fast');
 		},
 
 		collapseEntity : function($entity)
 		{
 			$entity.removeClass('eva-expanded').addClass('eva-collapsed').
-				find('.eva-methodLs').slideUp('fast');
+				find('.eva-entityName').prev('.eva-indicator').text('+').
+				end().end().find('.eva-methodLs').slideUp('fast');
 		},
 
 		expandMethod : function($method)
 		{
 			$method.removeClass('eva-collapsed').addClass('eva-expanded').
-				find('.eva-conditionLs').slideDown('fast');
+				find('.eva-methodName').prev('.eva-indicator').text('-').
+				end().end().find('.eva-conditionLs').slideDown('fast');
 		},
 
 		collapseMethod : function($method)
 		{
 			$method.removeClass('eva-expanded').addClass('eva-collapsed').
-				find('.eva-conditionLs').slideUp('fast');
+				find('.eva-methodName').prev('.eva-indicator').text('+').
+				end().end().find('.eva-conditionLs').slideUp('fast');
 		},
 
 		expandCondition : function($condition)
@@ -307,7 +311,39 @@ jQuery.noConflict();
 			_tpl.removeAttr('tplName');
 		});
 
-		eva.container.delegate('.eva-summary','click',function(e)
+		eva.container.delegate('.eva-toggleEntity', 'click', function(e)
+		{
+			e.preventDefault();
+			var _entity = $(e.target).closest('.eva-entity');
+			if( _entity.length )
+			{
+				if(_entity.hasClass('eva-collapsed'))
+				{
+					eva.expandEntity(_entity);
+				}
+				else
+				{
+					eva.collapseEntity(_entity);
+				}
+			}
+		}).
+		delegate('.eva-toggleMethod', 'click', function(e)
+		{
+			e.preventDefault();
+			var _method = $(e.target).closest('.eva-method');
+			if( _method.length )
+			{
+				if(_method.hasClass('eva-collapsed'))
+				{
+					eva.expandMethod(_method);
+				}
+				else
+				{
+					eva.collapseMethod(_method);
+				}
+			}
+		}).
+		delegate('.eva-summary', 'click', function(e)
 		{
 			e.preventDefault();
 			var _condition = $(e.target).closest('.eva-condition');
@@ -322,9 +358,8 @@ jQuery.noConflict();
 					eva.collapseCondition(_condition);
 				}
 			}
-		});
-
-		eva.container.delegate('.eva-run','click',function(e)
+		}).
+		delegate('.eva-run', 'click', function(e)
 		{
 			e.preventDefault();
 			var _$t = $(e.target);

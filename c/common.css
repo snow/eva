@@ -4,16 +4,34 @@
 /* layout */
 
 /* common */
-.eva-entity {background:#eee}
-	.eva-entity > .hd {background:#333;vertical-align:center}
-		.eva-entity > .hd h2 {float:left;padding:0 0.8em;margin:0;color:#fff}
+.eva-indicator {display:inline-block;visibility:hidden;width:1.5em;font-size:1.2em;text-align:center}
+a:hover .eva-indicator {visibility:visible}
+.eva-run {display:block;float:left;width:3em;height:46px;line-height:46px;text-align:center}
 
-.eva-entity .hd a {width:8em;margin-left:150px;color:#fff;padding:0.75em 1em;text-align:center;display:block}
+.eva-entity .hd a {display:block;float:left;color:#fff;text-decoration:none}
 .eva-entity .hd a:hover {background-color:#f6f6f6;color:#222}
+
+.eva-entity .hd span,
+.eva-entity .hd h2,
+.eva-entity .hd h3 {float:left}
+
+.eva-entity h2,
+.eva-entity h3 {color:#fff;width:6em}
+
+.eva-entity a:hover h2,
+.eva-entity a:hover h3 {color:#222}
+
+/* entity */
+.eva-entity {background:#eee}
+
+.eva-entity > .hd {background:#333}
+	.eva-entity > .hd a {height:3.5em;line-height:3.5em}
 
 /* method */
 .eva-method > .hd {background:#666}
-	.eva-method > .hd h3 {float:left;padding:0.5em 1.6em;margin:0;color:#fff}
+	.eva-method > .hd a {height:3em;line-height:3em}
+	.eva-method > .hd h3 {line-height:1.8em}
+	/*.eva-method h3 a {margin-left:5px}*/
 
 /* condition */
 .eva-summary {display:block;color:#222;text-decoration:none}
