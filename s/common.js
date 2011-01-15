@@ -249,11 +249,11 @@ jQuery.noConflict();
 
 			if(noAnim)
 			{
-				$condition.find('.eva-$condition').hide();
+				$condition.find('.eva-extra').hide();
 			}
 			else
 			{
-				$condition.find('.eva-$condition').slideUp('fast');
+				$condition.find('.eva-extra').slideUp('fast');
 			}
 		},
 
