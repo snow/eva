@@ -78,13 +78,13 @@ jQuery.noConflict();
 						});
 
 						$methodBody.append($condition);
-						eva.collapseCondition($condition);
+						eva.collapseCondition($condition,true);
 					});
 
-					eva.collapseMethod($method);
+					eva.collapseMethod($method,true);
 				});
 
-				eva.collapseEntity($entity);
+				eva.collapseEntity($entity,true);
 			});
 		},
 
@@ -200,11 +200,19 @@ jQuery.noConflict();
 				end().end().find('.eva-methodLs').slideDown('fast');
 		},
 
-		collapseEntity : function($entity)
+		collapseEntity : function($entity, noAnim)
 		{
 			$entity.removeClass('eva-expanded').addClass('eva-collapsed').
-				find('.eva-entityName').prev('.eva-indicator').text('+').
-				end().end().find('.eva-methodLs').slideUp('fast');
+				find('.eva-entityName').prev('.eva-indicator').text('+');
+
+			if(noAnim)
+			{
+				$entity.find('.eva-methodLs').hide();
+			}
+			else
+			{
+				$entity.find('.eva-methodLs').slideUp('fast');
+			}
 		},
 
 		expandMethod : function($method)
@@ -214,11 +222,19 @@ jQuery.noConflict();
 				end().end().find('.eva-conditionLs').slideDown('fast');
 		},
 
-		collapseMethod : function($method)
+		collapseMethod : function($method, noAnim)
 		{
 			$method.removeClass('eva-expanded').addClass('eva-collapsed').
-				find('.eva-methodName').prev('.eva-indicator').text('+').
-				end().end().find('.eva-conditionLs').slideUp('fast');
+				find('.eva-methodName').prev('.eva-indicator').text('+');
+
+			if(noAnim)
+			{
+				$method.find('.eva-conditionLs').hide();
+			}
+			else
+			{
+				$method.find('.eva-conditionLs').slideUp('fast');
+			}
 		},
 
 		expandCondition : function($condition)
@@ -227,10 +243,18 @@ jQuery.noConflict();
 				find('.eva-extra').slideDown('fast');
 		},
 
-		collapseCondition : function($condition)
+		collapseCondition : function($condition, noAnim)
 		{
-			$condition.removeClass('eva-expanded').addClass('eva-collapsed').
-				find('.eva-extra').slideUp('fast');
+			$condition.removeClass('eva-expanded').addClass('eva-collapsed');
+
+			if(noAnim)
+			{
+				$condition.find('.eva-$condition').hide();
+			}
+			else
+			{
+				$condition.find('.eva-$condition').slideUp('fast');
+			}
 		},
 
 		printJSON : function (obj, depth)
