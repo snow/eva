@@ -45,11 +45,6 @@ jQuery.noConflict();
 
 					$.each(method.conditions, function(i,condition)
 					{
-						if(eva.debug && (eva.conditionLs.length >= 10))
-						{
-							return;
-						}
-
 						condition.method = method;
 						eva.conditionLs.push(condition);
 						condition.id = 'eva-condition-' + (eva.conditionLs.length - 1);
@@ -391,11 +386,11 @@ jQuery.noConflict();
 			}
 		});
 
-		// replace attributes when running on develop host
-		if('eva.fe' === location.host)
+		// replace attributes when url param "d" exists with any value
+		if(/[?&]d[=&]|\?d$|\&d$/.test(location.search))
 		{
 			eva.debug = true;
-			eva.api.baseUri = 'http://eva.fe/pseudoApi';
+			eva.api.baseUri = 'pseudoApi';
 
 			$.each(eva.api.entries, function(entryName, entry)
 			{
